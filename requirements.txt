@@ -116,8 +116,8 @@ tinysegmenter==0.3
 tldextract==3.4.0
 tokenizers==0.13.2
 torch
-torchaudio==2.0.0
-torchvision==0.15.0
+torchaudio
+torchvision
 tornado==6.2
 tqdm
 traitlets==5.5.0
