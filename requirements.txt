@@ -4,3 +4,4 @@ fake_useragent
 unidecode
 nltk
 flask
+gunicorn
