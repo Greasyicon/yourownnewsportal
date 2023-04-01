@@ -92,7 +92,6 @@ pyOpenSSL
 PySocks
 python-dateutil
 pytz
-pywin32
 PyYAML==6.0
 pyzmq==24.0.1
 regex==2023.3.23
