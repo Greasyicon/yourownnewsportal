@@ -60,8 +60,6 @@ lxml==4.9.2
 Markdown
 MarkupSafe
 matplotlib-inline==0.1.6
-mkl-random
-mkl-service==2.4.0
 mpmath==1.2.1
 multidict
 multiprocess
