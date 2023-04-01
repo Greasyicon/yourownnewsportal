@@ -1,6 +1,5 @@
 requests
 newspaper3k
-concurrent.futures
 fake_useragent
 unidecode
 nltk
