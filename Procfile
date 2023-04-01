@@ -1,1 +1,1 @@
-web: gunicorn app:app
+web: bash install_packages.sh && gunicorn app:app
