@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Portal</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>
+        <h1>News Portal</h1>
+        <p class="marquee">Stay up-to-date with the latest news from top sources!</p>
+        {% for source, articles in articles_by_source.items() %}
+            <h2 class="source">{{ source }}</h2>
+            {% for article in articles %}
+                <div class="article" onclick="showArticle(this)">
+                    <div class="article-title">{{ article.title }}</div>
+                    <div class="article-text">{{ article.text }}</div>
+                    <div class="article-overlay" onclick="event.stopPropagation()">
+                        <div class="article-popup">
+                            <div class="article-popup-close" onclick="hideArticle(this)">×</div>
+                            <div class="article-popup-title">{{ article.title }}</div>
+                            <div class="article-popup-text">{{ article.text }}</div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    <script>
+        function showArticle(article) {
+            const overlay = article.querySelector('.article-overlay');
+            overlay.style.display = 'block';
+        }
+
+        function hideArticle(closeBtn) {
+            const overlay = closeBtn.closest('.article-overlay');
+            overlay.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
+
