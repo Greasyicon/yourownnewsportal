@@ -7,7 +7,7 @@ from newspaper import Article
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from fake_useragent import UserAgent
 
-API_KEY = '85208bdd07b540748605baf71abc6c1b' #'8617266eaa794b5aaf3af87defbbd1ff'#
+API_KEY = '8617266eaa794b5aaf3af87defbbd1ff'#'85208bdd07b540748605baf71abc6c1b' #
 use_premium_version = False
 REQUEST_LIMIT = 500  # Limit of requests for the free News API plan
 REQUEST_COUNT = 0  # Current number of requests

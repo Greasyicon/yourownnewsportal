@@ -23,7 +23,11 @@ def index():
 @app.route('/update_content', methods=['POST'])
 def update_content():
     print("Scraping Articles")
-    scrape_articles()
+    try:
+        return scrape_articles(), 200
+    except Exception as e:
+        print(traceback.format_exc())
+        return str(e), 500
     print("Cleaning Articles")
     data_preprocessing()
     with open('cleaned_news_dataset.json', 'r') as file:
