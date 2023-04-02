@@ -5,10 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>News Portal</title>
     <link rel="stylesheet" href="/static/styles.css">
+    <script>
+        async function updateContent() {
+            const button = document.getElementById("updateButton");
+            button.disabled = true;
+            button.innerText = "Updating...";
+
+            try {
+                const response = await fetch('/update_content', {method: 'POST'});
+                if (response.ok) {
+                    alert("Content updated successfully.");
+                    location.reload();
+                } else {
+                    alert("Failed to update content.");
+                }
+            } catch (error) {
+                alert("Error: " + error);
+            } finally {
+                button.disabled = false;
+                button.innerText = "Update Content";
+            }
+        }
+    </script>
 </head>
 <body>
+    <button id="updateButton" type="button" onclick="updateContent()">Update Content</button>
     <div class="container">
-        <h1>
         <h1>News Portal</h1>
         <p class="marquee">Stay up-to-date with the latest news from top sources!</p>
         {% for source, articles in articles_by_source.items() %}
@@ -42,4 +64,3 @@
     </script>
 </body>
 </html>
-

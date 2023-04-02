@@ -128,7 +128,7 @@ def clean_article(article):
         print(f"Error while cleaning article: {e}")
         return None
 
-def main():
+def data_preprocessing():
     with open("news_dataset.json", "r") as file:
         all_articles = json.load(file)
 
@@ -168,5 +168,5 @@ def main():
         print(f"Text: {article['text']}\n")
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+    # main()
