@@ -12,7 +12,7 @@ use_premium_version = False
 REQUEST_LIMIT = 500  # Limit of requests for the free News API plan
 REQUEST_COUNT = 0  # Current number of requests
 ua = UserAgent()
-
+multiprocessing = True
 def timer(func):
     def wrapper(*args, **kwargs):
         start_time = time.time()
@@ -88,7 +88,7 @@ def scrape_article_content(url):
         return article.text
     except Exception as e:
         print(f"Error while scraping: {url} - {e}")
-        return ""
+        return None
 
 
 # Wrapper function for error handling
@@ -106,47 +106,69 @@ def process_source(source_name):
         title = article_data['title']
         url = article_data['url']
         text = scrape_article_content(url)
-        article = {"source": source_name, "title": title, "text": text}
-        articles.append(article)
+        if text is not None:
+            article = {"source": source_name, "title": title, "text": text}
+            articles.append(article)
 
     return articles
 
 @timer
 def scrape_articles():
-    news_sources = fetch_sources()
+    news_sources = fetch_sources()[:3]
     # sources = [
     #     'bbc-news', 'cnn', 'reuters', 'the-hill', 'the-new-york-times',
     #     'the-washington-post', 'the-wall-street-journal', 'usa-today',
     #     'fox-news', 'msnbc'
     # ]
     all_articles = []
+    if multiprocessing:
+        # Process multiple sources concurrently using ThreadPoolExecutor
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            futures = {executor.submit(process_source, source_name): source_name for source_name in news_sources}
 
-    # Process multiple sources concurrently using ThreadPoolExecutor
-    with ThreadPoolExecutor(max_workers=10) as executor:
-        futures = {executor.submit(process_source, source_name): source_name for source_name in news_sources}
+            for future in as_completed(futures):
+                source_name = futures[future]
+                try:
+                    articles = future.result()
+                    all_articles.extend(articles)
+                    print(f"Scraped {len(articles)} articles from {source_name}")
+                    # Sleep for a short duration to avoid being blocked
+                    time.sleep(5)
 
-        for future in as_completed(futures):
-            source_name = futures[future]
-            try:
-                articles = future.result()
+                    if REQUEST_COUNT >= REQUEST_LIMIT:
+                        print("Reached the request limit. Stopping the script.")
+                        break
+
+                    # Save data after every 100 requests
+                    if REQUEST_COUNT % 100 == 0:
+                        save_data(all_articles)
+
+                except Exception as e:
+                    print(f"Error while processing {source_name}: {e}")
+    else:
+        # Process each source sequentially
+        for source_name in news_sources:
+            articles = scrape_data_from_source(source_name)
+            if articles:
                 all_articles.extend(articles)
-                print(f"Scraped {len(articles)} articles from {source_name}")
-                # Sleep for a short duration to avoid being blocked
-                time.sleep(5)
-
-                if REQUEST_COUNT >= REQUEST_LIMIT:
-                    print("Reached the request limit. Stopping the script.")
-                    break
-
-                # Save data after every 100 requests
-                if REQUEST_COUNT % 100 == 0:
-                    save_data(all_articles)
-
-            except Exception as e:
-                print(f"Error while processing {source_name}: {e}")
+            if REQUEST_COUNT >= REQUEST_LIMIT:
+                print("Reached the request limit. Stopping the script.")
+                break
+            # Save data after every 100 requests
+            if REQUEST_COUNT % 100 == 0:
+                save_data(all_articles)
 
     save_data(all_articles)
 
+def scrape_data_from_source(news_source):
+    # Process each source
+    try:
+        articles = process_source(news_source)
+        print(f"Scraped {len(articles)} articles from {news_source}")
+        # Sleep for a short duration to avoid being blocked
+        time.sleep(5)
+    except Exception as e:
+        print(f"Error while processing {news_source}: {e}")
 #
 if __name__ == "__main__":
     scrape_articles()

@@ -168,5 +168,5 @@ def data_preprocessing():
         print(f"Text: {article['text']}\n")
 
 
-# if __name__ == "__main__":
-    # main()
+if __name__ == "__main__":
+    data_preprocessing()
