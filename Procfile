@@ -1,1 +1,2 @@
-web: bash install_packages.sh && gunicorn app:app
+web: gunicorn app:app
+worker: celery -A celery worker --loglevel=info --concurrency=2

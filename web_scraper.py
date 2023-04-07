@@ -114,7 +114,7 @@ def process_source(source_name):
 
 @timer
 def scrape_articles():
-    news_sources = fetch_sources()[:3]
+    news_sources = fetch_sources()[:15]
     # sources = [
     #     'bbc-news', 'cnn', 'reuters', 'the-hill', 'the-new-york-times',
     #     'the-washington-post', 'the-wall-street-journal', 'usa-today',
