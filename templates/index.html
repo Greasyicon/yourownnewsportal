@@ -33,33 +33,37 @@
     </script>
 </head>
 <body>
-    <button id="updateButton" type="button" onclick="updateContent()">Update Content</button>
-    <div class="container">
+    <header>
         <h1>News Portal</h1>
-        <p class="marquee">Stay up-to-date with the latest news from top sources!</p>
-        <div style="position: fixed; top: 10px; right: 10px;">
-                        <select id="sourceDropdown" onchange="scrollToSource(this.value)">
+        <button id="updateButton" type="button" onclick="updateContent()">Update Content</button>
+        <div class="source-selector">
+            <select id="sourceDropdown" onchange="scrollToSource(this.value)">
                 <option value="" disabled selected>Select a source</option>
                 {% for source in news_sources %}
                     <option value="{{ source }}">{{ source }}</option>
                 {% endfor %}
             </select>
         </div>
+    </header>
+    <div class="container">
+        <p class="marquee">Stay up-to-date with the latest news from top sources!</p>
         {% for source, articles in articles_by_source.items() %}
             <h2 class="source" id="{{ source }}">{{ source }}</h2>
-            {% for article in articles %}
-                <div class="article" onclick="showArticle(this)">
-                    <div class="article-title">{{ article.title }}</div>
-                    <div class="article-text">{{ article.text }}</div>
-                    <div class="article-overlay" onclick="event.stopPropagation()">
-                        <div class="article-popup">
-                            <div class="article-popup-close" onclick="hideArticle(this)">×</div>
-                            <div class="article-popup-title">{{ article.title }}</div>
-                            <div class="article-popup-text">{{ article.text }}</div>
+            <div class="articles">
+                {% for article in articles %}
+                    <div class="article" onclick="showArticle(this)">
+                        <div class="article-title">{{ article.title }}</div>
+                        <div class="article-text">{{ article.text[:200] }}...</div>
+                        <div class="article-overlay" onclick="event.stopPropagation()">
+                            <div class="article-popup">
+                                <div class="article-popup-close" onclick="hideArticle(this)">×</div>
+                                <div class="article-popup-title">{{ article.title }}</div>
+                                <div class="article-popup-text">{{ article.text }}</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
         {% endfor %}
     </div>
 
@@ -76,4 +80,3 @@
     </script>
 </body>
 </html>
-
