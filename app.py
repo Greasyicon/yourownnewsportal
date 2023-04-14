@@ -1,13 +1,13 @@
 from flask import Flask, render_template, request, jsonify
-from flask_caching import Cache
+# from flask_caching import Cache
 import json
 import web_scraper
-from data_preprocessing import data_preprocessing
+# from data_preprocessing import data_preprocessing
 import traceback
-import requests
-from celery import Celery
-import os
-from categorize_news import classify_and_tag_articles
+# import requests
+# from celery import Celery
+# import os
+# from categorize_news import classify_and_tag_articles
 
 app = Flask(__name__)
 # cache = Cache(app, config={'CACHE_TYPE': 'simple'})
