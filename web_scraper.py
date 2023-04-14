@@ -7,7 +7,7 @@ from newspaper import Article
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from fake_useragent import UserAgent
 
-API_KEY = '85208bdd07b540748605baf71abc6c1b' #'8617266eaa794b5aaf3af87defbbd1ff'#
+API_KEY = 'ca03000b406746cab0fae37ca959aebc'#'''8617266eaa794b5aaf3af87defbbd1ff' #'85208bdd07b540748605baf71abc6c1b'#
 use_premium_version = False
 REQUEST_LIMIT = 500  # Limit of requests for the free News API plan
 REQUEST_COUNT = 0  # Current number of requests
@@ -32,12 +32,15 @@ def save_data(all_articles):
 # Fetch the list of news sources available from the News API
 def fetch_sources():
     global REQUEST_COUNT
+    base_url = 'https://newsapi.org/v2/sources?apiKey='
     try:
-        url = f'https://newsapi.org/v2/sources?apiKey={API_KEY}'
+        url = f'{base_url}{API_KEY}'
         # # Use fake user agent in the headers
         # headers = {'User-Agent': ua.random}
         # response = requests.get(url, headers=headers)
         response = requests.get(url)
+        if response.status_code == 429:
+            print("Too Many Requests..., Try Another Api Key")
         REQUEST_COUNT += 1
         data = response.json()
         return [source['id'] for source in data['sources']]
