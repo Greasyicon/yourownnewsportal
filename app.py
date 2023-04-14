@@ -1,46 +1,123 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from flask_caching import Cache
 import json
-from web_scraper import fetch_sources
+import web_scraper
+from data_preprocessing import data_preprocessing
+import traceback
+import requests
 from celery import Celery
 import os
-
-# Use RabbitMQ as the message broker
-broker_url = os.environ.get("CLOUDAMQP_URL", "amqp://guest:guest@localhost:5672//")
-
-# Create the Celery app
-celery_app = Celery("myapp", broker=broker_url)
+from categorize_news import classify_and_tag_articles
 
 app = Flask(__name__)
-cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+# cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
-# Rest of the code
+# # Celery configuration
+# app.config.from_object("celery_config")
+# celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+# celery.conf.update(app.config)
+
+# Add this line at the beginning of your app code
+USE_CELERY = False
+# @celery.task
+def update_content_task():
+    try:
+        web_scraper.scrape_articles()
+    except Exception as e:
+        print(traceback.format_exc())
+        return str(e), 500
 
 
 @app.route('/')
-@cache.cached(timeout=3600)  # Cache for 1 hour
+# @cache.cached(timeout=3600)  # Cache for 1 hour
 def index():
-    with open('cleaned_news_dataset.json', 'r') as file:
-        cleaned_articles = json.load(file)
+    with open('news_dataset.json', 'r') as file:
+        articles = json.load(file)
+
+    # Add tags to the cleaned_articles
+    # classify_and_tag_articles(articles)
 
     articles_by_source = {}
-    for article in cleaned_articles:
+    for article in articles:
         source = article['source']
         if source not in articles_by_source:
             articles_by_source[source] = []
         articles_by_source[source].append(article)
 
-    news_sources = fetch_sources()
+    return render_template('index.html', articles_by_source=articles_by_source, news_sources=web_scraper.fetch_sources())
 
-    return render_template('index.html', articles_by_source=articles_by_source, news_sources=news_sources)
 
+
+# Replace the current update_content() function with the following code
 @app.route('/update_content', methods=['POST'])
 def update_content():
-    # Run background tasks
-    celery_app.send_task("_celery.scrape_articles_task")
-    celery_app.send_task("_celery.data_preprocessing_task")
+    print("Scraping Articles")
+    if USE_CELERY:
+        update_content_task.delay()
+        return "Content update started. Please refresh the page after a while.", 202
+    else:
+        try:
+            update_content_task()
+            return "Content updated successfully.", 202
+        except Exception as e:
+            print(traceback.format_exc())
+            return str(e), 500
 
-    return "Scraping and preprocessing tasks started in the background", 202
+
+@app.route('/load_more_sources', methods=['GET'])
+def load_more_sources():
+    start = int(request.args.get('start', 0))
+    end = int(request.args.get('end', 5))
+    with open('news_dataset.json', 'r') as file:
+        articles = json.load(file)
+
+    articles_by_source = {}
+    for article in articles:
+        source = article['source']
+        if source not in articles_by_source:
+            articles_by_source[source] = []
+        articles_by_source[source].append(article)
+
+    news_sources = web_scraper.fetch_sources()[start:end]
+    filtered_articles_by_source = {source: articles_by_source[source] for source in news_sources if source in articles_by_source}
+    return jsonify(filtered_articles_by_source)
+
+
+scraped_sources = []
+
+
+@app.route('/scrape_more_articles')
+def scrape_more_articles():
+    global scraped_sources
+    start = int(request.args.get('start', 0))
+    end = int(request.args.get('end', 5))
+
+    unscraped_sources = web_scraper.fetch_unscraped_sources(scraped_sources)
+    new_sources = unscraped_sources[start:end]
+    scraped_sources.extend(new_sources)
+
+    new_articles = []
+    for source in new_sources:
+        new_articles.extend(web_scraper.process_source(source))
+
+    with open('news_dataset.json', 'r') as file:
+        all_articles = json.load(file)
+    all_articles.extend(new_articles)
+
+    with open('news_dataset.json', 'w') as file:
+        json.dump(all_articles, file)
+
+    articles_by_source = {}
+    for article in new_articles:
+        source = article['source']
+        if source not in articles_by_source:
+            articles_by_source[source] = []
+        articles_by_source[source].append(article)
+
+    return jsonify({"html": render_template('new_articles.html', articles_by_source=articles_by_source)})
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+
+    app.config['DEBUG'] = True
+    app.run()

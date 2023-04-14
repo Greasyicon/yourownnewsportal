@@ -5,7 +5,7 @@ import os
 broker_url = os.environ.get("CLOUDAMQP_URL", "amqp://guest:guest@localhost:5672//")
 
 # Create the Celery app
-app = Celery("myapp", broker=broker_url)
+app = Celery("app", broker=broker_url)
 
 @app.task
 def scrape_articles_task():

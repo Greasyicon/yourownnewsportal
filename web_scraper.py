@@ -7,7 +7,7 @@ from newspaper import Article
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from fake_useragent import UserAgent
 
-API_KEY = '8617266eaa794b5aaf3af87defbbd1ff'#'85208bdd07b540748605baf71abc6c1b' #
+API_KEY = '85208bdd07b540748605baf71abc6c1b' #'8617266eaa794b5aaf3af87defbbd1ff'#
 use_premium_version = False
 REQUEST_LIMIT = 500  # Limit of requests for the free News API plan
 REQUEST_COUNT = 0  # Current number of requests
@@ -113,8 +113,9 @@ def process_source(source_name):
     return articles
 
 @timer
-def scrape_articles():
-    news_sources = fetch_sources()[:15]
+def scrape_articles(start=0, end=5):
+    news_sources = fetch_sources()[start:end]
+    print("News Sources Fetched.")
     # sources = [
     #     'bbc-news', 'cnn', 'reuters', 'the-hill', 'the-new-york-times',
     #     'the-washington-post', 'the-wall-street-journal', 'usa-today',
@@ -169,6 +170,13 @@ def scrape_data_from_source(news_source):
         time.sleep(5)
     except Exception as e:
         print(f"Error while processing {news_source}: {e}")
-#
+
+def fetch_unscraped_sources(scraped_sources):
+    all_sources = fetch_sources()
+    unscraped_sources = [source for source in all_sources if source not in scraped_sources]
+    return unscraped_sources
+
+
+
 if __name__ == "__main__":
     scrape_articles()

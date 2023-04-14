@@ -1,0 +1,27 @@
+{% for source, articles in articles_by_source.items() %}
+  <h2 class="source" id="{{ source }}">{{ source }}</h2>
+  <div class="row">
+    {% for article in articles %}
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100" id="article-{{ source }}-{{ loop.index }}" data-overlay-id="overlay-{{ source }}-{{ loop.index }}" onclick="showArticle(this)">
+          <div class="card-body">
+            <h5 class="card-title">{{ article.title }}</h5>
+            <p class="card-text">{{ article.text[:200] }}...</p>
+            <p class="card-text"><small class="text-muted">Tags: {{ article.tags|join(', ') }}</small></p>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endfor %}
+{% for source, articles in articles_by_source.items() %}
+  {% for article in articles %}
+    <div class="article-overlay" onclick="event.stopPropagation()" id="overlay-{{ source }}-{{ loop.index }}" style="display: none;">
+      <div class="article-popup">
+        <div class="article-popup-close" onclick="hideArticle(this)">×</div>
+        <div class="article-popup-title">{{ article.title }}</div>
+        <div class="article-popup-text">{{ article.text }}</div>
+      </div>
+    </div>
+  {% endfor %}
+{% endfor %}

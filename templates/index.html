@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>News Portal</title>
     <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
         async function updateContent() {
             const button = document.getElementById("updateButton");
@@ -14,7 +17,7 @@
             try {
                 const response = await fetch('/update_content', {method: 'POST'});
                 if (response.ok) {
-                    alert("Content update started. Please refresh the page after a while.");
+                    alert("Content updated. Please refresh the page now.");
                 } else {
                     alert("Failed to update content.");
                 }
@@ -31,45 +34,10 @@
             sourceElement.scrollIntoView({ behavior: 'smooth' });
         }
     </script>
-</head>
-<body>
-    <header>
-        <h1>News Portal</h1>
-        <button id="updateButton" type="button" onclick="updateContent()">Update Content</button>
-        <div class="source-selector">
-            <select id="sourceDropdown" onchange="scrollToSource(this.value)">
-                <option value="" disabled selected>Select a source</option>
-                {% for source in news_sources %}
-                    <option value="{{ source }}">{{ source }}</option>
-                {% endfor %}
-            </select>
-        </div>
-    </header>
-    <div class="container">
-        <p class="marquee">Stay up-to-date with the latest news from top sources!</p>
-        {% for source, articles in articles_by_source.items() %}
-            <h2 class="source" id="{{ source }}">{{ source }}</h2>
-            <div class="articles">
-                {% for article in articles %}
-                    <div class="article" onclick="showArticle(this)">
-                        <div class="article-title">{{ article.title }}</div>
-                        <div class="article-text">{{ article.text[:200] }}...</div>
-                        <div class="article-overlay" onclick="event.stopPropagation()">
-                            <div class="article-popup">
-                                <div class="article-popup-close" onclick="hideArticle(this)">×</div>
-                                <div class="article-popup-title">{{ article.title }}</div>
-                                <div class="article-popup-text">{{ article.text }}</div>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endfor %}
-    </div>
-
     <script>
         function showArticle(article) {
-            const overlay = article.querySelector('.article-overlay');
+            const articleId = article.id.replace('article-', 'overlay-');
+            const overlay = document.getElementById(articleId);
             overlay.style.display = 'block';
         }
 
@@ -77,6 +45,70 @@
             const overlay = closeBtn.closest('.article-overlay');
             overlay.style.display = 'none';
         }
+
     </script>
+    <script>
+        async function translateArticle(articleId, sourceId, targetLanguage) {
+            const response = await fetch('/translate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    'article_id': articleId,
+                    'source_id': sourceId,
+                    'target_language': targetLanguage
+                })
+            });
+            const result = await response.json();
+            if (response.ok) {
+                const article = document.getElementById('article-' + sourceId + '-' + articleId);
+                const translatedText = article.querySelector('.article-translated-text');
+                translatedText.innerHTML = result.translated_text;
+            } else {
+                alert("Failed to translate article.");
+            }
+        }
+    </script>
+</head>
+<body>
+        <button id="updateButton" type="button" onclick="updateContent()">Update Content.</button>
+    <div class="container">
+        <h1>News Portal</h1>
+        <p class="ticker">Stay up-to-date with the latest news from top sources!</p>
+        <div style="position: absolute; top: 10px; right: 10px;">
+            <select id="sourceDropdown" onchange="scrollToSource(this.value)">
+                <option value="" disabled selected>Select a source</option>
+                {% for source in news_sources %}
+                    <option value="{{ source }}">{{ source }}</option>
+                {% endfor %}
+            </select>
+            </div>
+            {% for source, articles in articles_by_source.items() %}
+            <h2 class="source" id="{{source}}">{{ source }}</h2>
+            <div class="row">
+                {% for article in articles %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100" id="article-{{source}}-{{ loop.index }}" onclick="showArticle(this)">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ article.title }}</h5>
+                                <p class="card-text">{{ article.text[:200] }}</p>
+                                <p class="card-text"><small class="text-muted">Tags: {{ article.tags|join(', ') }}</small></p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        {% for source, articles in articles_by_source.items() %}
+            {% for article in articles %}
+                <div class="article-overlay" onclick="event.stopPropagation()" id="overlay-{{source}}-{{ loop.index }}" style="display: none;">
+                    <div class="article-popup">
+                        <div class="article-popup-close" onclick="hideArticle(this)">×</div>
+                        <div class="article-popup-title">{{ article.title }}</div>
+                        <div class="article-popup-text">{{ article.text }}</div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
 </body>
 </html>
