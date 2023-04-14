@@ -67,7 +67,7 @@ def update_content():
 @app.route('/load_more_sources', methods=['GET'])
 def load_more_sources():
     start = int(request.args.get('start', 0))
-    end = int(request.args.get('end', 5))
+    end = int(request.args.get('end', 2))
     with open('news_dataset.json', 'r') as file:
         articles = json.load(file)
 
@@ -90,7 +90,7 @@ scraped_sources = []
 def scrape_more_articles():
     global scraped_sources
     start = int(request.args.get('start', 0))
-    end = int(request.args.get('end', 5))
+    end = int(request.args.get('end', 2))
 
     unscraped_sources = web_scraper.fetch_unscraped_sources(scraped_sources)
     new_sources = unscraped_sources[start:end]

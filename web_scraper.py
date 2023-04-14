@@ -116,7 +116,7 @@ def process_source(source_name):
     return articles
 
 @timer
-def scrape_articles(start=0, end=5):
+def scrape_articles(start=0, end=2):
     news_sources = fetch_sources()[start:end]
     print("News Sources Fetched.")
     # sources = [
