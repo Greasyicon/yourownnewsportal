@@ -165,3 +165,17 @@ cursor: pointer;
     transform: translateX(-100%);
   }
 }
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.tag {
+  background-color: #007bff;
+  color: white;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  margin: 2px;
+}

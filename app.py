@@ -33,7 +33,6 @@ def update_content_task():
 def index():
     with open('news_dataset.json', 'r') as file:
         articles = json.load(file)
-
     # Add tags to the cleaned_articles
     # classify_and_tag_articles(articles)
 
