@@ -8,7 +8,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from fake_useragent import UserAgent
 import categorize_news
 
-API_KEY = 'ca03000b406746cab0fae37ca959aebc'#'''8617266eaa794b5aaf3af87defbbd1ff' #'85208bdd07b540748605baf71abc6c1b'#
+API_KEY = '8617266eaa794b5aaf3af87defbbd1ff' #'85208bdd07b540748605baf71abc6c1b'#'ca03000b406746cab0fae37ca959aebc'#
 use_premium_version = False
 REQUEST_LIMIT = 500  # Limit of requests for the free News API plan
 REQUEST_COUNT = 0  # Current number of requests

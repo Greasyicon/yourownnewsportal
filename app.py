@@ -63,25 +63,6 @@ def update_content():
             return str(e), 500
 
 
-@app.route('/load_more_sources', methods=['GET'])
-def load_more_sources():
-    start = int(request.args.get('start', 0))
-    end = int(request.args.get('end', 2))
-    with open('news_dataset.json', 'r') as file:
-        articles = json.load(file)
-
-    articles_by_source = {}
-    for article in articles:
-        source = article['source']
-        if source not in articles_by_source:
-            articles_by_source[source] = []
-        articles_by_source[source].append(article)
-
-    news_sources = web_scraper.fetch_sources()[start:end]
-    filtered_articles_by_source = {source: articles_by_source[source] for source in news_sources if source in articles_by_source}
-    return jsonify(filtered_articles_by_source)
-
-
 scraped_sources = []
 
 
@@ -90,7 +71,7 @@ def scrape_more_articles():
     global scraped_sources
     start = int(request.args.get('start', 0))
     end = int(request.args.get('end', 2))
-
+    print("GETINGGGGGG")
     unscraped_sources = web_scraper.fetch_unscraped_sources(scraped_sources)
     new_sources = unscraped_sources[start:end]
     scraped_sources.extend(new_sources)

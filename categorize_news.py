@@ -50,14 +50,14 @@
 # import json
 # classifier = pipeline("text-classification", model="distilbert-base-uncased-finetuned-sst-2-english",   truncation=True)
 
-def generate_tags(text):
-    result = classifier(text)
-    tags = []
-    for r in result:
-        label = r["label"].replace("LABEL_", "").lower()
-        if label not in tags:
-            tags.append(label)
-    return tags
+# def generate_tags(text):
+#     result = classifier(text)
+#     tags = []
+#     for r in result:
+#         label = r["label"].replace("LABEL_", "").lower()
+#         if label not in tags:
+#             tags.append(label)
+#     return tags
 
 from keybert import KeyBERT
 import json
@@ -68,10 +68,10 @@ def extract_tags(text, num_tags=3):
     tags = [keyword[0] for keyword in keywords]
     return tags
 
-if __name__ == '__main__':
-    with open('news_dataset.json', 'r') as file:
-        articles = json.load(file)
-    for article in articles:
-        text = article['text']
-        tag = extract_tags(text)
-        print (tag)
+# if __name__ == '__main__':
+#     with open('news_dataset.json', 'r') as file:
+#         articles = json.load(file)
+#     for article in articles:
+#         text = article['text']
+#         tag = extract_tags(text)
+#         print (tag)

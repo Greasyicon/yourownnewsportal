@@ -48,9 +48,9 @@ button {
 }
 
 .source {
-    color: #1a73e8;
+    color: black;
     font-weight: bold;
-    font-size: 24px;
+    font-size: 50px;
     margin-top: 30px;
     margin-bottom: 15px;
 }
@@ -90,7 +90,8 @@ button {
 }
 
 .article-popup {
-    background-color: white;
+    background-color: grey;
+    text-color: white;
     width: 80%;
     max-width: 800px;
     height: 80%;
@@ -123,10 +124,12 @@ cursor: pointer;
     font-size: 1.5rem;
     font-weight: bold;
     margin-bottom: 1rem;
+    color: white;
 }
 
 .article-popup-text {
     white-space: pre-wrap;
+    color: white;
 }
 
 /* Responsive design and improved layout using Bootstrap */
@@ -153,9 +156,25 @@ cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 100%;
+  width: 35%;
   animation: scrolling 10s linear infinite;
+  background-color: rgba(0, 0, 0, 0.6); /* Add a semi-transparent black background */
+  padding: 10px 15px; /* Add padding around the ticker text */
+  color: #ffffff; /* Change the font color to white for better visibility */
+  border-radius: 5px; /* Add border-radius for smoother edges */
 }
+
+.heading {
+  width: 20%;
+  /*text-align: right; /* Align the heading text to the right side */
+  background-color: rgba(0, 0, 0, 0.6); /* Add a semi-transparent black background */
+  padding: 10px 15px; /* Add padding around the heading text */
+  color: #ffffff; /* Change the font color to white for better visibility */
+  border-radius: 5px; /* Add border-radius for smoother edges */
+  margin-bottom: 20px; /* Add some margin to separate the heading from the content */
+}
+
+
 
 @keyframes scrolling {
   0% {
@@ -178,4 +197,68 @@ cursor: pointer;
   padding: 2px 8px;
   border-radius: 3px;
   margin: 2px;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-image: url('/static/news-background.png');
+  height: 60vh; /* Adjust this value to set the desired height */
+  background-size: cover; /* This value will ensure that the background image covers the entire container */
+  background-position: center; /* This will center the background image */
+  background-attachment: fixed;
+  background-height: 100vh;
+}
+
+.card {
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s linear;
+  margin-bottom: 1.5rem;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+.card h5 {
+  font-weight: bold;
+  color: #222;
+}
+
+.card .text-muted {
+  color: #777;
+}
+
+
+.news-card {
+ /* background-image: url('/static/images/news-background.png');*/
+  background-position: center;
+  background-size: cover;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  color: white;
+  overflow: hidden;
+  position: relative;
+}
+
+.news-card:before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.3) 50%);
+}
+
+.news-card .card-body {
+  position: relative;
+  z-index: 1;
+}
+
+.tags {
+  word-break: break-word;
 }
