@@ -91,11 +91,12 @@
                             <div class="card-body">
                                 <h5 class="card-title">{{ article.title }}</h5>
                                 <p class="card-text">{{ article.text[:200] }}</p>
-                                <div class="tags">
-                                    {% for tag in article.tags %}
-                                    <span class="tag">{{ tag }}</span>
-                                    {% endfor %}
-                                </div>
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        Tags: {% for tag in article.tags %}#{{ tag }}{% if not loop.last %}, {% endif %}{% endfor %}
+                                    </small>
+                                </p>
+
                             </div>
                         </div>
                     </div>

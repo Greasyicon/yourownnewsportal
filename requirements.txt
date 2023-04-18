@@ -7,3 +7,4 @@ flask
 gunicorn
 flask_caching
 celery[librabbitmq]
+keybert
