@@ -6,7 +6,7 @@ import json
 from newspaper import Article
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from fake_useragent import UserAgent
-import categorize_news
+# import categorize_news
 
 API_KEY = '8617266eaa794b5aaf3af87defbbd1ff' #'85208bdd07b540748605baf71abc6c1b'#'ca03000b406746cab0fae37ca959aebc'#
 use_premium_version = False
@@ -111,7 +111,7 @@ def process_source(source_name):
         url = article_data['url']
         text = scrape_article_content(url)
         if text is not None:
-            tags = categorize_news.extract_tags(text)
+            tags = []#categorize_news.extract_tags(text)
             article = {"source": source_name, "title": title, "text": text, 'tags': tags}
             articles.append(article)
 
