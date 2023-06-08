@@ -20,7 +20,8 @@
             try {
                 const response = await fetch('/update_content', {method: 'POST'});
                 if (response.ok) {
-                    alert("Content updated. Please refresh the page now.");
+                    alert("Content updated. Refreshing Page Now.");
+                    location.reload(); // Refresh the page
                 } else {
                     alert("Failed to update content.");
                 }
@@ -99,6 +100,12 @@
                                     {% endfor %}
                                     </div>
                                 <p class="card-text">{{ article.text[:100] }}</p>
+                                <h6> News Summary </h6>
+                                <div class="summary">
+                                    {% for summ in article.summary %}
+                                    <span class="summary">{{ loop.index }}. {{ summ }}</span><br>
+                                    {% endfor %}
+                                </div><br>
                             </div>
                         </div>
                     </div>
@@ -111,6 +118,17 @@
                     <div class="article-popup">
                         <div class="article-popup-close" onclick="hideArticle(this)">×</div>
                         <div class="article-popup-title">{{ article.title }}</div>
+                        <div class="tags">
+                            {% for tag in article.tags %}
+                            <span class="tag">#{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                        <h6> News Summary </h6>
+                        <div class="summary">
+                            {% for summ in article.summary %}
+                            <span class="summary">{{ loop.index }}. {{ summ }}</span><br>
+                            {% endfor %}
+                        </div><br>
                         <div class="article-popup-text">{{ article.text }}</div>
                     </div>
                 </div>

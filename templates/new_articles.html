@@ -11,6 +11,12 @@
                 <span class="tag">#{{ tag }}</span>
                 {% endfor %}
             </div>
+            <h6> News Summary </h6>
+            <div class="summary">
+                {% for summ in article.summary %}
+                <span class="summary">{{ loop.index }}. {{ summ }}</span><br>
+                {% endfor %}
+            </div><br>
             <p class="card-text">{{ article.text[:100] }}...</p>
           </div>
         </div>
@@ -24,6 +30,17 @@
       <div class="article-popup">
         <div class="article-popup-close" onclick="hideArticle(this)">×</div>
         <div class="article-popup-title">{{ article.title }}</div>
+        <div class="tags">
+            {% for tag in article.tags %}
+            <span class="tag">#{{ tag }}</span>
+            {% endfor %}
+        </div>
+        <h6> News Summary </h6>
+        <div class="summary">
+            {% for summ in article.summary %}
+            <span class="summary">{{ loop.index }}. {{ summ }}</span><br>
+            {% endfor %}
+        </div><br>
         <div class="article-popup-text">{{ article.text }}</div>
       </div>
     </div>

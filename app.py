@@ -1,16 +1,16 @@
 from flask import Flask, render_template, request, jsonify
-# from flask_caching import Cache
+from flask_caching import Cache
 import json
 import web_scraper
 # from data_preprocessing import data_preprocessing
 import traceback
 # import requests
 # from celery import Celery
-# import os
+import os
 # from categorize_news import classify_and_tag_articles
 
 app = Flask(__name__)
-# cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
 # # Celery configuration
 # app.config.from_object("celery_config")
@@ -23,6 +23,7 @@ USE_CELERY = False
 def update_content_task():
     try:
         web_scraper.scrape_articles()
+        return "Content updated successfully.", 200  # Return success response
     except Exception as e:
         print(traceback.format_exc())
         return str(e), 500
@@ -31,7 +32,11 @@ def update_content_task():
 @app.route('/')
 # @cache.cached(timeout=3600)  # Cache for 1 hour
 def index():
-    with open('news_dataset.json', 'r') as file:
+    # Get the absolute path to the file
+    file_path = os.path.join(os.path.dirname(__file__), 'news_dataset.json')
+
+    # Open the file
+    with open(file_path, 'r') as file:
         articles = json.load(file)
     # Add tags to the cleaned_articles
     # classify_and_tag_articles(articles)
@@ -57,6 +62,9 @@ def update_content():
     else:
         try:
             update_content_task()
+            # render_template('index.html', articles_by_source=articles_by_source,
+            #                 news_sources=web_scraper.fetch_sources())
+
             return "Content updated successfully.", 202
         except Exception as e:
             print(traceback.format_exc())
@@ -68,10 +76,10 @@ scraped_sources = []
 
 @app.route('/scrape_more_articles')
 def scrape_more_articles():
+    print("Scraping New Sources")
     global scraped_sources
     start = int(request.args.get('start', 0))
     end = int(request.args.get('end', 2))
-    print("GETINGGGGGG")
     unscraped_sources = web_scraper.fetch_unscraped_sources(scraped_sources)
     new_sources = unscraped_sources[start:end]
     scraped_sources.extend(new_sources)
@@ -80,11 +88,15 @@ def scrape_more_articles():
     for source in new_sources:
         new_articles.extend(web_scraper.process_source(source))
 
-    with open('news_dataset.json', 'r') as file:
+    # Get the absolute path to the file
+    file_path = os.path.join(os.path.dirname(__file__), 'news_dataset.json')
+
+    # Open the file
+    with open(file_path, 'r') as file:
         all_articles = json.load(file)
     all_articles.extend(new_articles)
 
-    with open('news_dataset.json', 'w') as file:
+    with open(file_path, 'w') as file:
         json.dump(all_articles, file)
 
     articles_by_source = {}

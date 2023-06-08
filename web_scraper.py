@@ -6,9 +6,11 @@ import json
 from newspaper import Article
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from fake_useragent import UserAgent
-# import categorize_news
+import categorize_news
+import text_summarization
+import os
 
-API_KEY = '8617266eaa794b5aaf3af87defbbd1ff' #'85208bdd07b540748605baf71abc6c1b'#'ca03000b406746cab0fae37ca959aebc'#
+API_KEY = 'ca03000b406746cab0fae37ca959aebc'#'8617266eaa794b5aaf3af87defbbd1ff' #'85208bdd07b540748605baf71abc6c1b'#
 use_premium_version = False
 REQUEST_LIMIT = 500  # Limit of requests for the free News API plan
 REQUEST_COUNT = 0  # Current number of requests
@@ -25,7 +27,11 @@ def timer(func):
     return wrapper
 
 def save_data(all_articles):
-    with open("news_dataset.json", "w") as file:
+    # Get the absolute path to the file
+    file_path = os.path.join(os.path.dirname(__file__), 'news_dataset.json')
+
+    # Open the file
+    with open(file_path, 'w') as file:
         json.dump(all_articles, file)
     print("Dataset saved to news_dataset.json")
 
@@ -111,8 +117,10 @@ def process_source(source_name):
         url = article_data['url']
         text = scrape_article_content(url)
         if text is not None:
-            tags = []#categorize_news.extract_tags(text)
-            article = {"source": source_name, "title": title, "text": text, 'tags': tags}
+            tags = categorize_news.extract_tags(text)
+            summary = []#text_summarization.summarize_news_article(text)
+            bullets = text_summarization.summarize_news_article(text)
+            article = {"source": source_name, "title": title, "text": text, "summary": bullets, 'tags': tags}
             articles.append(article)
 
     return articles

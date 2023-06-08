@@ -15,7 +15,9 @@ function toggleLoadingSpinner(visible) {
 
 window.addEventListener("scroll", function () {
   if (
-    window.scrollY + window.innerHeight >=
+//    window.innerHeight + window.pageYOffset >=
+//    document.documentElement.offsetHeight - 500 &&
+    window.innerHeight + window.scrollY + 1 >=
       document.documentElement.scrollHeight &&
     !loading
   ) {
@@ -39,7 +41,7 @@ function loadMoreSources() {
     })
     .catch((error) => {
       console.error("Error fetching more articles:", error);
-      loading = false;  ``
+      loading = false;
       toggleLoadingSpinner(false); // Hide the loading spinner
     });
 }
@@ -74,3 +76,31 @@ document.getElementById("updateButton").addEventListener("click", function () {
       toggleLoadingSpinner(false); // Hide the loading spinner
     });
 });
+
+let debouncedScroll = debounce(function () {
+  if (
+//    window.innerHeight + window.pageYOffset >=
+//    document.documentElement.offsetHeight - 500 &&
+    window.innerHeight + window.scrollY + 1 >=
+      document.documentElement.scrollHeight &&
+    !loading
+  ) {
+    start += 2;
+    end += 2;
+    loadMoreSources();
+  }
+}, 200);
+
+window.addEventListener("scroll", debouncedScroll);
+
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
